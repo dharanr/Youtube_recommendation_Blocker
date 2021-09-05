@@ -1,8 +1,8 @@
-// ==UserScript==
-// @name         New Userscript
+    // ==UserScript==
+// @name         Youtube focusking
 // @namespace    http://tampermonkey.net/
-// @version      0.2
-// @description  YouTube - Home and recommendations hide
+// @version      0.51
+// @description  Helps you not overwhelmed with the recommendations from YT.
 // @author       You
 // @match        *://www.youtube.com/*
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
@@ -37,12 +37,14 @@
            home.show.message();
 
            //Listeners
-           document.getElementById("logo").addEventListener("click", home.hide.logo());
-           document.getElementById("items").addEventListener("click", home.hide.forwards());
-           document.getElementById("guide-button").addEventListener("click", function(){
-               home.hide.logo();
-               home.hide.forwards();
-           });
+           setTimeout(function(){
+               document.getElementById("logo").addEventListener("click", home.hide.logo());
+               document.getElementById("items").addEventListener("click", home.hide.forwards());
+               document.getElementById("guide-button").addEventListener("click", function(){
+                   home.hide.logo();
+                   home.hide.forwards();
+               });
+           },1000);
        },
 
        hide : {
@@ -57,7 +59,7 @@
               setTimeout(function(){
                   let elem = document.getElementsByTagName("ytd-guide-entry-renderer")[0];
                   if (elem!=undefined) elem.querySelector("[title=Home]").remove();
-              }, 700);
+              }, 900);
           },
        },
        show : {
@@ -97,22 +99,30 @@
                 document.getElementById("ytd-player").style = "height:100%";
             }
             else{
-                document.getElementById("movie_player").style = "width:93.5%";
-                document.getElementById("ytd-player").style = "height:93.7%";
+                document.getElementById("movie_player").style = browser.isFirefox() ? "width:93.5%" : "width:91.5%";
+                document.getElementById("ytd-player").style = browser.isFirefox() ? "height:93.7%": "height:91.7%";
             }
         },
 
         hide : {
             recommendations : function(){
-                setTimeout(function(){
-                    var playerContainer = document.getElementsByTagName("ytd-watch-flexy");
-                    if(playerContainer!=null && playerContainer!=undefined){
-                        playerContainer[0].querySelector("[id=secondary]").remove();
+                var count = 0;
+                var repeater = setInterval(function(){
+                    var playerContainer = document.getElementsByTagName("ytd-watch-flexy")[0];
+                    if(++count == 10) clearInterval(repeater);
+                    if(playerContainer!=null && playerContainer!=undefined && playerContainer.querySelector("[id=secondary]")!=null){
+                        playerContainer.querySelector("[id=secondary]").remove();
                         player.align(document.getElementById("player-theater-container").children.length != 0);
                     }
                 },500);
             }
         },
+    }
+
+    var browser = {
+        isFirefox : function(){
+            return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+        }
     }
 
     //Init
