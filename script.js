@@ -37,7 +37,7 @@
             if(domElement!=null && domElement.getAttribute("page-subtype") == "home")
             {
                 domElement.style = "color: grey; display: flex; font-size: 20px; color: grey; display: flex; font-size: 20px;margin-left: 65%;margin-top: 19%;"
-                domElement.innerHTML = "Welcome dharan !! <br> Home page blocked due to Content manipulation";
+                domElement.innerHTML = "Welcome Buddy !! <br> Home page blocked due to Content manipulation";
             }
         }
     }
