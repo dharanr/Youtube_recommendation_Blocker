@@ -56,8 +56,8 @@
             let domElement = elements[i];
             if(domElement!=null && domElement.getAttribute("page-subtype") == "home")
             {
-                domElement.style = "color: grey; display: flex; font-size: 20px; color: grey; display: flex; font-size: 20px;margin-left: 65%;margin-top: 19%;"
-                domElement.innerHTML = "Welcome Buddy !! <br> Home page blocked due to Content manipulation <br> Change it back by disabling Tampermonkey script thala!!";
+                domElement.style = "color: grey; display: flex; font-size: 20px; color: grey; display: flex; flex-direction:column; font-size: 20px;margin-left: 65%;margin-top: 19%;"
+                domElement.innerHTML = "<div style='margin-top:20px; font-weight:500; color: green'> Peace Bruhh !!</div> <div style='margin-top:20px'> Home page blocked <br>Due to <span>Recommendation-engine content manipulation</span> <br></div><br>";
             }
         }
     }
