@@ -6,9 +6,9 @@ What it does:
   3. "Related / similar videos" option removed - since it diverts us to some other video while watching one
 
 How to run this:
-  1. Install the TamperMonkey extension in the browser
-  2. Click on the "create new script" in the extension popup
-  3. Paste the script.js contents
-  4. Just refresh the youtube web, then automatically the changes are applied
-
-
+  1. Open a desktop chrome or firefox browser
+  2. Install TamperMonkey extension in it [link https://www.tampermonkey.net/]
+  3. Open this link https://greasyfork.org/en/scripts/431961-youtube-focusking
+  4. Click install in greasyFork
+  5. Click install in tamperMonkey forwarded page
+  6. Now refresh the youtube :)
