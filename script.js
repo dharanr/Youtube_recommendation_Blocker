@@ -1,9 +1,9 @@
     // ==UserScript==
 // @name         Youtube focusking
 // @namespace    http://tampermonkey.net/
-// @version      0.51
+// @version      0.55
 // @description  Helps you not overwhelmed with the recommendations from YT.
-// @author       You
+// @author       dharan
 // @match        *://www.youtube.com/*
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @grant        none
@@ -32,14 +32,10 @@
     //Home - Utils
     var home = {
        init : function(){
-           home.hide.logo();
-           home.hide.forwards();
            home.show.message();
 
            //Listeners
            setTimeout(function(){
-               document.getElementById("logo").addEventListener("click", home.hide.logo());
-               document.getElementById("items").addEventListener("click", home.hide.forwards());
                document.getElementById("guide-button").addEventListener("click", function(){
                    home.hide.logo();
                    home.hide.forwards();
@@ -58,7 +54,10 @@
           forwards : function(){
               setTimeout(function(){
                   let elem = document.getElementsByTagName("ytd-guide-entry-renderer")[0];
-                  if (elem!=undefined) elem.querySelector("[title=Home]").remove();
+                  if (!!elem){
+                      let homeButton = elem.querySelector("[title=Home]");
+                      if(!!homeButton) homeButton.remove();
+                  }
               }, 900);
           },
        },
@@ -70,7 +69,7 @@
                   let domElement = elements[i];
                   if(domElement!=null && domElement.getAttribute("page-subtype") == "home")
                   {
-                      domElement.style = "color: grey; display: flex; font-size: 20px; color: grey; display: flex; flex-direction:column; font-size: 20px;margin-left: 65%;margin-top: 19%;"
+                      domElement.style = "color: grey; display: flex; font-size: 20px; color: grey; flex-direction:column; font-size: 20px; margin-left: 65%; margin-top: 19%;"
                       domElement.innerHTML = config.home.message.content;
                   }
               }
@@ -81,10 +80,11 @@
 
     var player = {
         init : function(){
+            let playerContainer = document.getElementById("player-theater-container");
+            player.align(!!playerContainer && playerContainer.children.length != 0);
             player.hide.recommendations();
 
             //Observer - init
-            let playerContainer = document.getElementById("player-theater-container");
             if (playerContainer!=undefined){
                 var observer = new MutationObserver(function(config){
                     player.align(config[0].addedNodes.length!=0);
@@ -99,8 +99,11 @@
                 document.getElementById("ytd-player").style = "height:100%";
             }
             else{
-                document.getElementById("movie_player").style = browser.isFirefox() ? "width:93.5%" : "width:91.5%";
-                document.getElementById("ytd-player").style = browser.isFirefox() ? "height:93.7%": "height:91.7%";
+                setTimeout(function(){
+                    let videoDOM = document.getElementsByTagName("video")[0];
+                    document.getElementById("movie_player").style = "width:" + videoDOM.style.width;
+                    document.getElementById("ytd-player").style   = "height:" + videoDOM.style.height;
+                }, 1000);
             }
         },
 
@@ -110,9 +113,8 @@
                 var repeater = setInterval(function(){
                     var playerContainer = document.getElementsByTagName("ytd-watch-flexy")[0];
                     if(++count == 10) clearInterval(repeater);
-                    if(playerContainer!=null && playerContainer!=undefined && playerContainer.querySelector("[id=secondary]")!=null){
+                    if(!!playerContainer && playerContainer.querySelector("[id=secondary]")!=null){
                         playerContainer.querySelector("[id=secondary]").remove();
-                        player.align(document.getElementById("player-theater-container").children.length != 0);
                     }
                 },500);
             }
@@ -120,13 +122,44 @@
     }
 
     var browser = {
+        Constants : {
+            lastURL : "#",
+        },
         isFirefox : function(){
             return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+        },
+        getURL : function(){
+            return document.location.href;
+        },
+        updateURL : function(){
+            browser.Constants.lastURL = document.location.href;
+        }
+    };
+
+
+    //INIT
+    browser.updateURL();
+    URLRouter();
+
+
+    function URLRouter(){
+        home.hide.logo();
+        home.hide.forwards();
+
+        if(browser.Constants.lastURL.indexOf("watch")!=-1){
+            player.init();
+        }
+        else{
+            home.init();
         }
     }
 
-    //Init
-    home.init();
-    player.init();
+    //URL WATCHER
+    new MutationObserver(() => {
+        if (browser.getURL() !== browser.Constants.lastURL) {
+            browser.updateURL();
+            URLRouter();
+        }
+    }).observe(document, {subtree: true, childList: true});
 
 })();
